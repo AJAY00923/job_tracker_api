@@ -18,7 +18,7 @@ class JobApplication:
     
     @staticmethod
     def is_valid_status(status):
-        valid_statuses = ["applied", "interview", "offer", "rejected"]
+        valid_statuses = ["applied", "interview scheduled", "offer received", "rejected"]
         return status in valid_statuses
 
     def update_status(self, new_status):
@@ -32,6 +32,7 @@ class JobApplication:
     
     def __str__(self):
         return f"Application for {self.role} at {self.company} is currently '{self.status}'."
+    
 class TechApplication(JobApplication):
     def __init__(self, company, role, tech_stack, status ="applied"):
         super().__init__(company, role, status)
@@ -39,6 +40,7 @@ class TechApplication(JobApplication):
 
     def __repr__(self):
          return f"TechApplication(company={self.company!r}, role={self.role!r}, tech_stack={self.tech_stack!r}, status={self.status!r})"
+    
 class RemoteApplication(JobApplication):
     def __init__(self, company, role, time_zone, status="applied"):
         super().__init__(company, role, status)
@@ -64,28 +66,7 @@ class TrackedApplication(JobApplication):
 
     def follow_up(self):
         self.follow_up_remainder.remind(self)
-
-tech_app = TechApplication("Facebook", "Frontend Engineer", ["Python", "FastApi"])
-remote_app = RemoteApplication("Amazon", "Data Scientist", "PST")
-app = JobApplication("Google", "Backend Engineer")
-tracked_app = TrackedApplication("Microsoft", "Software Engineer", 7)
-print(tech_app)
-print(repr(tech_app))
-print(remote_app.is_compatible_with_time_zone("CST"))
-print(remote_app.is_compatible_with_time_zone("PST"))
-print(remote_app)
-tech_app.update_status("interview scheduled")
-print(tech_app)
-print(tracked_app)
-tracked_app.follow_up()
-# Call it on the class directly — no object needed
-print(JobApplication.is_valid_status("applied"))    # True
-print(JobApplication.is_valid_status("interview"))  # True
-print(JobApplication.is_valid_status("ghosted"))    # False
-
-# You can also call it on an object — works both ways
-app = JobApplication("Google", "Backend Engineer")
-print(app.is_valid_status("offer"))  
+ 
 if __name__ == "__main__":
     # --- TecahApplication ---
     tech_app = TechApplication("Facebook", "Frontend Engineer", ["Python", "FastApi"])
