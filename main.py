@@ -1,12 +1,45 @@
+from datetime import date
 class JobApplication:
-    def __init__(self, company, role, status="applied"):
-        self.company = company
-        self.role = role
+    def __init__(self, company, role, status="applied", created_at=None):
+        self._company = company
+        self._role = role
+        self._status = None
         self.status = status
-       
-    def describe(self):
-        print(f"{self.role} at {self.company} is currently '{self.status}'.")
+        self._created_at = created_at if created_at is not None else date.today()
 
+    # --- Properties ---
+    @property
+    def company(self):
+        return self._company    
+    @company.setter
+    def company(self, new_company):
+        if not new_company or not new_company.strip():
+            raise ValueError("Company name cannot be empty.")
+        self._company = new_company.strip()
+
+    
+    @property
+    def role(self):
+        return self._role
+    
+    @property
+    def status(self):
+        return self._status
+    
+    @status.setter
+    def status(self, new_status):
+        valid_statuses = ["applied", "interview scheduled", "offer received", "rejected"]
+        if new_status not in valid_statuses:
+            raise ValueError(f"Invalid status. Valid options are: {', '.join(valid_statuses)}")
+        self._status = new_status
+    
+    @property
+    def created_at(self):
+        return self._created_at
+#---- methods ---
+    
+    def describe(self):
+        print(f"{self._role} at {self._company} is currently '{self._status}' . ")
     @classmethod
     def from_string(cls, application_str):
         company, role = application_str.strip(",").split(",")
@@ -102,6 +135,6 @@ if __name__ == "__main__":
     # --- Test class methods ---
     print("\n==== Class Methods ====")
     app_from_str = JobApplication.from_string("Netflix, Data Engineer")
-    app_from_dict = JobApplication.from_dict({"company": "Apple", "role": "iOS Developer", "status": "offer"})
+    app_from_dict = JobApplication.from_dict({"company": "Apple", "role": "iOS Developer", "status": "offer received"})
     print(app_from_str)
     print(app_from_dict)
