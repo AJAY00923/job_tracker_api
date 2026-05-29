@@ -138,3 +138,32 @@ if __name__ == "__main__":
     app_from_dict = JobApplication.from_dict({"company": "Apple", "role": "iOS Developer", "status": "offer received"})
     print(app_from_str)
     print(app_from_dict)
+
+class ApplicationTracker:
+    def __init__(self):
+        self.applications = []
+    
+    def add(self, application):
+        self.applications.append(application)
+        # you write this
+    
+    def get_by_status(self, status):
+        return [app for app in self.applications if app.status == status]
+        # you write this
+     
+    def summary(self):
+        # you write this
+        print("==== Application Summary ====")
+        if not self.applications:
+           raise ValueError("No applications to summarize.")
+        status_counts = {}
+        for app in self.applications:
+            status_counts[app.status] = status_counts.get(app.status, 0) + 1
+        for status, count in status_counts.items():
+            print(f"{status}: {count} applications")
+if __name__ == "__main__":
+   tracker = ApplicationTracker()
+   tracker.add(JobApplication("Netflix", "Backend Engineer"))
+   tracker.add(JobApplication("Meta", "Data Engineer"))
+   tracker.add(TechApplication("OpenAI", "AI Engineer", ["Python", "FastAPI"]))
+   tracker.summary()
