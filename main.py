@@ -37,7 +37,17 @@ class JobApplication:
     def created_at(self):
         return self._created_at
 #---- methods ---
-    
+    def __hash__(self):
+        return hash((self.company, self.role))
+    def __lt__(self, other):
+        if not isinstance(other, JobApplication):
+            return NotImplemented
+        return self.company.lower().strip() < other.company.lower().strip()
+
+    def __eq__ (self, other):
+
+      return self.company == other.company and self.role == other.role
+   
     def describe(self):
         print(f"{self._role} at {self._company} is currently '{self._status}' . ")
     @classmethod
@@ -167,3 +177,20 @@ if __name__ == "__main__":
    tracker.add(JobApplication("Meta", "Data Engineer"))
    tracker.add(TechApplication("OpenAI", "AI Engineer", ["Python", "FastAPI"]))
    tracker.summary()
+   app1 = JobApplication("Google", "Backend Engineer")
+   app2 = JobApplication("Google", "Backend Engineer")
+   app3 = JobApplication("Meta", "Backend Engineer")
+   apps = [
+    JobApplication("Meta", "Backend Engineer"),
+    JobApplication("Apple", "Backend Engineer"),
+    JobApplication("Google", "Backend Engineer"),
+]
+
+   sorted_apps = sorted(apps)
+   for app in sorted_apps:
+    print(app.company)
+   print(app1 == app2)  # what prints?
+   print(app1 == app3)  # what prints?  
+   app1 = JobApplication("Google", "Backend Engineer")
+   apps = {app1}
+   print(apps)
