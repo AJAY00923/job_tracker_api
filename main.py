@@ -141,7 +141,7 @@ def get_application_by_status(applications, status):
     for app in applications:
         if app.status == status:
             yield app
-            
+
 if __name__ == "__main__":
    tracker = ApplicationTracker()
    tracker.add(JobApplication("Netflix", "Backend Engineer"))
@@ -166,5 +166,6 @@ if __name__ == "__main__":
    app1 = JobApplication("Google", "Backend Engineer")
    apps = {app1}
    print(apps)
-   for app in get_application_by_status(apps, "applied"):
-    print(app)
+   gen = get_application_by_status(apps, "rejected")
+   first = next(gen, None)
+   print(first)
