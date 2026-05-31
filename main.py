@@ -95,6 +95,7 @@ class RemoteApplication(JobApplication):
     def __repr__(self):
         return f"RemoteApplication(company={self.company!r}, role={self.role!r}, time_zone={self.time_zone!r}, status={self.status!r})" 
 # Test it like this:
+    
 
 class FollowUpRemainder:
     def __init__(self, days):
@@ -109,45 +110,8 @@ class TrackedApplication(JobApplication):
 
     def follow_up(self):
         self.follow_up_remainder.remind(self)
- 
-if __name__ == "__main__":
-    # --- TecahApplication ---
-    tech_app = TechApplication("Facebook", "Frontend Engineer", ["Python", "FastApi"])
-    remote_app = RemoteApplication("Amazon", "Data Scientist", "PST")
-    app = JobApplication("Google", "Backend Engineer")
-    tracked_app = TrackedApplication("Microsoft", "Software Engineer", 7)
-    #--- Test __repr__ and __str__ ---
-    print("==== Application DEtails ====")
-    print(tech_app)
-    print(repr(tech_app))
-    
-    # test time zone compatibility
-    print("==== Time Zone Compatibility ====")
-    print(remote_app.is_compatible_with_time_zone("CST"))
-    print(remote_app.is_compatible_with_time_zone("PST"))
 
-    # --- Test update status ---
-    print("==== Update Status ====")
-    tech_app.update_status("interview scheduled")
-    print(f"after valid update: {tech_app}")
-    tech_app.update_status("ghosted")
-    print(f"after invalid update: {tech_app}")
-    # --- Test Follow Up Remainder ---
-    print("==== Follow Up Remainder ====")
-    print(tracked_app)
-    tracked_app.follow_up()
-    # --- Test is_valid_status ---
-    print("\n==== Valid Status Check ====")
-    statuses = ["applied", "interview scheduled", "ghosted", "offer received"]
-    for status in statuses:
-        print(f"Is '{status}' a valid status? {JobApplication.is_valid_status(status)}")
 
-    # --- Test class methods ---
-    print("\n==== Class Methods ====")
-    app_from_str = JobApplication.from_string("Netflix, Data Engineer")
-    app_from_dict = JobApplication.from_dict({"company": "Apple", "role": "iOS Developer", "status": "offer received"})
-    print(app_from_str)
-    print(app_from_dict)
 
 class ApplicationTracker:
     def __init__(self):
@@ -171,6 +135,13 @@ class ApplicationTracker:
             status_counts[app.status] = status_counts.get(app.status, 0) + 1
         for status, count in status_counts.items():
             print(f"{status}: {count} applications")
+
+#-- Application Generator ---           
+def get_application_by_status(applications, status):
+    for app in applications:
+        if app.status == status:
+            yield app
+            
 if __name__ == "__main__":
    tracker = ApplicationTracker()
    tracker.add(JobApplication("Netflix", "Backend Engineer"))
@@ -185,6 +156,7 @@ if __name__ == "__main__":
     JobApplication("Apple", "Backend Engineer"),
     JobApplication("Google", "Backend Engineer"),
 ]
+   apps[1].update_status("interview scheduled")
 
    sorted_apps = sorted(apps)
    for app in sorted_apps:
@@ -194,3 +166,5 @@ if __name__ == "__main__":
    app1 = JobApplication("Google", "Backend Engineer")
    apps = {app1}
    print(apps)
+   for app in get_application_by_status(apps, "applied"):
+    print(app)
