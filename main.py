@@ -1,4 +1,5 @@
 from datetime import date
+import traceback
 class JobApplication:
     def __init__(self, company, role, status="applied", created_at=None):
         self._company = company
@@ -136,6 +137,31 @@ class ApplicationTracker:
         for status, count in status_counts.items():
             print(f"{status}: {count} applications")
 
+#-- Context Manager ---
+class ApplicationLogger:
+    def __init__(self, filename):
+        self.filename = filename
+        self.file = None
+    
+    def __enter__(self):
+        self.file = open(self.filename, "w")
+        print("Log file opened.")
+        return self.file
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # you write this
+        if self.file:
+          self.file.close()
+          print("Log file closed.")
+        # close the file
+        if exc_type is not None:
+            print(f"An exception message: {exc_val}")  
+            print(f"Exception type: {exc_type.__name__}")
+            print(f"Traceback: {''.join(traceback.format_tb(exc_tb))}")
+            return False  # Propagate the exception
+        # print "Log file closed."
+        return True  # Suppress exceptions if any
+
 #-- Application Generator ---           
 def get_application_by_status(applications, status):
     for app in applications:
@@ -169,3 +195,7 @@ if __name__ == "__main__":
    gen = get_application_by_status(apps, "rejected")
    first = next(gen, None)
    print(first)
+   with ApplicationLogger("applications.log") as log:
+    log.write("Application to Google submitted.\n")
+    #raise ValueError("Something went wrong!")
+    log.write("Application to Meta submitted.\n")
