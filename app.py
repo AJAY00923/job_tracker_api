@@ -1,6 +1,6 @@
 from schemas import JobApplicationCreate, JobApplicationUpdate
 from typing import List
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from logger import logger   
 
 app = FastAPI()
@@ -29,7 +29,7 @@ async def update_application(company: str, update: JobApplicationUpdate) -> dict
             logger.info("Application updated", company=company, new_status=update.status)
             return {"message": f"Application for {company} updated to '{update.status}'."}  
 
-    return {'message' : f"NO Application found for  '{company}'."}
+    raise HTTPException(status_code=404, detail=f"Application for {company} not found.")
 
 @app.delete("/applications/{company}")
 async def delete_application(company: str) -> dict:
@@ -39,4 +39,4 @@ async def delete_application(company: str) -> dict:
             applications.remove(application)
             logger.warning("Application deleted", company=company)
             return {"message": f"Application for {company} deleted successfully."}
-    return {"message": f"No application found for {company}."}  
+    raise HTTPException(status_code=404, detail=f"Application for {company} not found.")  
