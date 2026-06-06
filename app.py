@@ -7,22 +7,22 @@ app = FastAPI()
 
 applications = []
 @app.get("/")
-def read_root():
+async def read_root():
     return {"message":"Job Tracker Api is running!"}
 
 @app.get("/applications", response_model = dict)
-def get_applications() -> dict:
+async def get_applications() -> dict:
     logger.info("Fetching all applications", total=len(applications))
     return {"applications": applications}
 
 @app.post("/applications", status_code=201)
-def create_application(application: JobApplicationCreate) -> dict:
+async def create_application(application: JobApplicationCreate) -> dict:
     applications.append(application)
     logger.info("New application added", company=application.company, role=application.role)
     return {"message": "Application added successfully", "application": application}
 
 @app.put("/applications/{company}")
-def update_application(company: str, update: JobApplicationUpdate) -> dict:
+async def update_application(company: str, update: JobApplicationUpdate) -> dict:
     for application in applications:
         if application.company == company:
             application.status = update.status
@@ -32,7 +32,7 @@ def update_application(company: str, update: JobApplicationUpdate) -> dict:
     return {'message' : f"NO Application found for  '{company}'."}
 
 @app.delete("/applications/{company}")
-def delete_application(company: str) -> dict:
+async def delete_application(company: str) -> dict:
     global applications
     for application in applications:
         if application.company == company:
