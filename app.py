@@ -1,4 +1,5 @@
-from schemas import JobApplicationCreate, JobApplicationUpdate, Token
+from schemas import JobApplicationCreate, JobApplicationUpdate, Token, JobApplicationResponse
+
 from typing import List
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -45,14 +46,14 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()) -> dict:
     access_token = create_access_token(data={"sub": form_data.username})
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.get("/applications", response_model=dict)
+@app.get("/applications")
 async def get_applications(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ) -> dict:
     all_applications = db.query(JobApplicationDB).all()
     logger.info("Fetching all applications", total=len(all_applications))
-    return {"applications": all_applications}
+    return {"applications": [JobApplicationResponse.model_validate(app) for app in all_applications]}
 
 @app.post("/applications", status_code=201)
 async def create_application(
@@ -69,7 +70,7 @@ async def create_application(
     db.commit()
     db.refresh(db_application)
     logger.info("New application added", company=application.company, role=application.role)
-    return {"message": "Application added successfully", "application": application}
+    return {"message": "Application added successfully", "application": JobApplicationResponse.model_validate(db_application)}
 
 @app.put("/applications/{company}")
 async def update_application(
